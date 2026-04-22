@@ -385,7 +385,7 @@ async function generateAIReport() {
     3. ⚖️ Kết luận & Lời khuyên: Đưa ra nhận xét khách quan xem ai đang gánh team, ai đang lười, ai là 'báo thủ'. Lời khuyên để cải thiện.
     4. Format bằng Markdown gọn gàng, chia mục rõ ràng, dùng emoji cho sinh động. Giọng điệu thân thiện, có một chút thâm thúy/cà khịa vui vẻ.`;
 
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
