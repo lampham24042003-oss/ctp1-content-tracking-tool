@@ -45,6 +45,7 @@ async function initApp() {
         if (logsStore[k]) logsStore[k][f] = data;
       }
     }
+    window.logsStore = logsStore;
     renderLog(logsStore);
   });
 
