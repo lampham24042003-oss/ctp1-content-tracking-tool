@@ -343,6 +343,75 @@ function renderLog(logsData) {
   }).join('');
 }
 
+// ── AI REPORT (GEMINI 2.5 FLASH) ──────────────────────────────────
+async function generateAIReport() {
+  const apiKey = document.getElementById('gemini-key').value.trim();
+  if (!apiKey) {
+    alert("Vui lòng nhập Gemini API Key!");
+    return;
+  }
+  localStorage.setItem('ct_gemini_key', apiKey);
+  const contentDiv = document.getElementById('ai-report-content');
+  contentDiv.innerHTML = '<div style="text-align:center; padding: 40px;"><span style="animation: spin 1s linear infinite; display:inline-block; font-size: 24px;">⏳</span><br><br>AI đang rà soát toàn bộ data và action log...</div>';
+
+  try {
+    const simpleTasks = Object.values(tasks).map(t => ({
+      concept: t.concept,
+      pic: t.pic,
+      status: t.status,
+      ready: t.ready,
+      format: t.format,
+      source: t.source
+    }));
+    
+    // Attempt to read logs from window if available (passed from app.js)
+    const logsData = window.logsStore || {};
+    const sortedLogs = Object.values(logsData).sort((a,b)=>b.ts - a.ts).slice(0, 300).map(l => ({
+      u: l.user, a: l.action, d: l.detail, t: new Date(l.ts).toLocaleString('vi-VN')
+    }));
+
+    const prompt = `Bạn là một chuyên gia quản lý dự án khó tính và hài hước, đang theo dõi tiến độ sản xuất content.
+    Hãy phân tích kĩ càng performance của 2 nhân sự: Lam và Bảo dựa trên dữ liệu thật dưới đây.
+    
+    Dữ liệu Task:
+    ${JSON.stringify(simpleTasks)}
+    
+    Dữ liệu Log (Lịch sử hành động gần nhất):
+    ${JSON.stringify(sortedLogs)}
+    
+    Yêu cầu xuất báo cáo:
+    1. 📊 Thống kê số liệu: Tổng số task, số task của mỗi người, bao nhiêu đã xong (ready = true), bao nhiêu chưa xong.
+    2. 🕵️ Đánh giá chi tiết: Đánh giá thái độ, độ chăm chỉ và tiến độ của Lam và Bảo dựa trên lượng task, status và những gì họ làm trong log. Ai làm việc nhiều? Ai ít tương tác?
+    3. ⚖️ Kết luận & Lời khuyên: Đưa ra nhận xét khách quan xem ai đang gánh team, ai đang lười, ai là 'báo thủ'. Lời khuyên để cải thiện.
+    4. Format bằng Markdown gọn gàng, chia mục rõ ràng, dùng emoji cho sinh động. Giọng điệu thân thiện, có một chút thâm thúy/cà khịa vui vẻ.`;
+
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }]
+      })
+    });
+    
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message);
+    let text = data.candidates[0].content.parts[0].text;
+    
+    // Add specific CSS classes for styling if needed, but marked.js will handle markdown
+    contentDiv.innerHTML = typeof marked !== 'undefined' ? marked.parse(text) : `<pre style="white-space:pre-wrap;font-family:inherit">${text}</pre>`;
+  } catch (error) {
+    contentDiv.innerHTML = `<div style="color:var(--accent); padding:10px; background:var(--surface2); border-radius:8px;">Lỗi: ${error.message}</div>`;
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const k = localStorage.getItem('ct_gemini_key');
+  if (k) {
+    const inp = document.getElementById('gemini-key');
+    if (inp) inp.value = k;
+  }
+});
+
 // ── STATUS BAR ────────────────────────────────────────────────────
 function updateStatusBar() {
   const all = Object.values(tasks).filter(t => !t.hidden);
