@@ -396,3 +396,14 @@ tr.highlight-new td{animation:highlightFlash 2s ease-out forwards}
 .main-table.full-view .col-concept{width:240px!important}
 .main-table.full-view .cell-desc{max-height:none;display:block;-webkit-line-clamp:unset;overflow:visible}
 .main-table.full-view textarea.cell-edit{min-height:100px;resize:vertical}
+
+/* ── AI MARKDOWN ─────────────────────────────────────────────────── */
+#ai-report-content h1, #ai-report-content h2, #ai-report-content h3{margin: 10px 0; color: var(--accent);}
+#ai-report-content h1{font-size: 16px;} #ai-report-content h2{font-size: 15px;} #ai-report-content h3{font-size: 14px;}
+#ai-report-content p{margin-bottom: 10px;}
+#ai-report-content ul, #ai-report-content ol{padding-left: 20px; margin-bottom: 10px;}
+#ai-report-content li{margin-bottom: 4px;}
+#ai-report-content strong{color: var(--text); font-weight: 800;}
+#ai-report-content table{width:100%; border-collapse:collapse; margin-bottom: 10px;}
+#ai-report-content th, #ai-report-content td{border: 1px solid var(--border); padding: 5px; text-align:left;}
+#ai-report-content th{background: var(--surface2);}
