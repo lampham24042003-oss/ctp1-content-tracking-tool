@@ -344,13 +344,13 @@ function renderLog(logsData) {
 }
 
 // ── AI REPORT (GEMINI 2.5 FLASH) ──────────────────────────────────
+const GEMINI_API_KEY = "HAY_DIEN_KEY_CUA_M_VAO_DAY";
+
 async function generateAIReport() {
-  const apiKey = document.getElementById('gemini-key').value.trim();
-  if (!apiKey) {
-    alert("Vui lòng nhập Gemini API Key!");
+  if (!GEMINI_API_KEY || GEMINI_API_KEY === "HAY_DIEN_KEY_CUA_M_VAO_DAY") {
+    alert("Ê, m chưa điền API Key vào file app-core.js kìa!");
     return;
   }
-  localStorage.setItem('ct_gemini_key', apiKey);
   const contentDiv = document.getElementById('ai-report-content');
   contentDiv.innerHTML = '<div style="text-align:center; padding: 40px;"><span style="animation: spin 1s linear infinite; display:inline-block; font-size: 24px;">⏳</span><br><br>AI đang rà soát toàn bộ data và action log...</div>';
 
@@ -385,7 +385,7 @@ async function generateAIReport() {
     3. ⚖️ Kết luận & Lời khuyên: Đưa ra nhận xét khách quan xem ai đang gánh team, ai đang lười, ai là 'báo thủ'. Lời khuyên để cải thiện.
     4. Format bằng Markdown gọn gàng, chia mục rõ ràng, dùng emoji cho sinh động. Giọng điệu thân thiện, có một chút thâm thúy/cà khịa vui vẻ.`;
 
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -404,13 +404,7 @@ async function generateAIReport() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  const k = localStorage.getItem('ct_gemini_key');
-  if (k) {
-    const inp = document.getElementById('gemini-key');
-    if (inp) inp.value = k;
-  }
-});
+// Removed DOMContentLoaded key loader
 
 // ── STATUS BAR ────────────────────────────────────────────────────
 function updateStatusBar() {
