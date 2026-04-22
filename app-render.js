@@ -42,18 +42,6 @@ function renderTable() {
   initDragDrop();
   updateStatusBar();
   initColumnResizer();
-
-  if (window.newRowKey) {
-    requestAnimationFrame(() => {
-      const tr = document.querySelector(`tr[data-key="${window.newRowKey}"]`);
-      if (tr) {
-        tr.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        tr.classList.add('highlight-new');
-        setTimeout(() => tr.classList.remove('highlight-new'), 2000);
-      }
-      window.newRowKey = null;
-    });
-  }
 }
 
 // ── COLUMN RESIZER ────────────────────────────────────────────────
