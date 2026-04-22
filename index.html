@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="dark-neon">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Content Tracker – Cờ Tỷ Phú</title>
+  <meta name="description" content="Tool tracking sản xuất content realtime">
+  <link rel="icon" type="image/png" href="dice_icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="anim-container"></div>
+
+  <!-- User Select -->
+  <div id="user-modal" class="user-modal">
+    <div class="user-modal-card">
+      <div class="logo-big">🎲</div>
+      <h1 class="user-modal-title">Content Tracker</h1>
+      <p class="user-modal-sub">Bạn là ai hôm nay?</p>
+      <div class="user-modal-buttons">
+        <button class="user-btn user-btn-lam" onclick="selectUser('Lam')">
+          <span class="user-avatar">🎨</span><span>Lam</span>
+        </button>
+        <button class="user-btn user-btn-bao" onclick="selectUser('Bảo')">
+          <span class="user-avatar">⚡</span><span>Bảo</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main App -->
+  <div id="app" class="app hidden">
+    <header class="toolbar">
+      <div class="toolbar-left">
+        <div class="app-logo">🎲</div>
+        <div class="app-title">Content Tracker</div>
+        <div id="user-badge" class="user-badge"></div>
+        <button id="edit-toggle" class="edit-toggle" onclick="toggleEditMode()">
+          <span id="lock-icon">🔒</span><span id="lock-text">Khoá</span>
+        </button>
+      </div>
+      <div class="toolbar-center">
+        <div class="search-wrap">
+          <span>🔍</span>
+          <input id="search-input" type="text" placeholder="Tìm concept, mô tả..." oninput="applyFilters()">
+        </div>
+        <button id="full-view-toggle" class="toolbar-btn" onclick="toggleFullView()" title="Xem toàn bộ nội dung bị che">👀 Full View</button>
+        <select id="filter-format" class="filter-sel" onchange="applyFilters()">
+          <option value="">Format: All</option>
+          <option>VIDEO</option><option>BANNER</option><option>CAROUSEL</option><option>PLAYABLE</option>
+        </select>
+        <select id="filter-status" class="filter-sel" onchange="applyFilters()">
+          <option value="">Status: All</option>
+          <option>Draft</option><option>In Progress</option><option>Done</option><option>Cancelled</option>
+        </select>
+        <select id="filter-pic" class="filter-sel" onchange="applyFilters()">
+          <option value="">PIC: All</option><option>Lam</option><option>Bảo</option>
+        </select>
+      </div>
+      <div class="toolbar-right">
+        <button class="toolbar-btn" onclick="togglePanel('theme-panel')" title="Theme">🎨</button>
+        <button class="toolbar-btn" onclick="togglePanel('log-panel')" title="Log">📋</button>
+        <button id="btn-add" class="toolbar-btn btn-add hidden" onclick="addRow()">＋ Task</button>
+      </div>
+    </header>
+
+    <div class="table-wrapper">
+      <table id="main-table" class="main-table">
+        <thead><tr id="thead-row"></tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+      <div id="loading-indicator" style="display:flex; justify-content:center; align-items:center; height:200px; color:var(--text-muted); font-size:16px;">
+        <span style="animation: spin 1s linear infinite; display:inline-block; margin-right:8px;">⏳</span> Đang tải dữ liệu...
+      </div>
+    </div>
+
+    <div class="status-bar">
+      <span id="stat-total"></span>
+      <span id="stat-ready"></span>
+      <span id="stat-done"></span>
+    </div>
+  </div>
+
+  <!-- Theme Panel -->
+  <div id="theme-panel" class="side-panel">
+    <div class="panel-hdr"><span>🎨 Theme</span><button onclick="togglePanel('theme-panel')">✕</button></div>
+    <div id="theme-grid" class="theme-grid"></div>
+    <div class="anim-row">
+      <span>✨ Animations</span>
+      <label class="sw"><input type="checkbox" id="anim-chk" onchange="toggleAnim(this.checked)"><span class="sw-slider"></span></label>
+    </div>
+  </div>
+
+  <!-- Log Panel -->
+  <div id="log-panel" class="side-panel">
+    <div class="panel-hdr"><span>📋 Action Log</span><button onclick="togglePanel('log-panel')">✕</button></div>
+    <div id="log-list" class="log-list"></div>
+  </div>
+
+  <div id="overlay" class="overlay hidden" onclick="closePanels()"></div>
+
+  <!-- Hyperlink Modal -->
+  <div id="link-modal" class="modal-wrap hidden">
+    <div class="modal-card">
+      <div class="modal-title">🔗 Gắn hyperlink (Cmd+K)</div>
+      <input id="link-url" type="url" placeholder="https://..." class="modal-input">
+      <div class="modal-actions">
+        <button onclick="closeLinkModal()">Huỷ</button>
+        <button class="btn-primary" onclick="applyLink()">Gắn</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirm Modal -->
+  <div id="confirm-modal" class="modal-wrap hidden">
+    <div class="modal-card">
+      <div class="modal-title">🗑️ Xoá task này?</div>
+      <p class="modal-sub">Không thể hoàn tác.</p>
+      <div class="modal-actions">
+        <button onclick="closeConfirm()">Huỷ</button>
+        <button class="btn-danger" onclick="confirmDelete()">Xoá</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.3/Sortable.min.js"></script>
+  <script src="db.js"></script>
+  <script src="app-core.js"></script>
+  <script src="app-render.js"></script>
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
