@@ -344,7 +344,7 @@ function renderLog(logsData) {
 }
 
 // ── AI REPORT (GEMINI 2.5 FLASH) ──────────────────────────────────
-const GEMINI_API_KEY = "HAY_DIEN_KEY_CUA_M_VAO_DAY";
+const GEMINI_API_KEY = "AIzaSyBRbzh68a6ZoWksO7350d4b8LFdOUsZqrE";
 
 async function generateAIReport() {
   if (!GEMINI_API_KEY || GEMINI_API_KEY === "HAY_DIEN_KEY_CUA_M_VAO_DAY") {
