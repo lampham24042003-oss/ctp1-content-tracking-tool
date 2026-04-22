@@ -47,6 +47,7 @@
           <input id="search-input" type="text" placeholder="Tìm concept, mô tả..." oninput="applyFilters()">
         </div>
         <button id="full-view-toggle" class="toolbar-btn" onclick="toggleFullView()" title="Xem toàn bộ nội dung bị che">👀 Full View</button>
+        <button id="ai-toggle" class="toolbar-btn" onclick="togglePanel('ai-panel')" style="color:#fff;background:linear-gradient(45deg,#ff0090,#7c6efa);border:none;">🤖 AI Review</button>
         <select id="filter-format" class="filter-sel" onchange="applyFilters()">
           <option value="">Format: All</option>
           <option>VIDEO</option><option>BANNER</option><option>CAROUSEL</option><option>PLAYABLE</option>
@@ -99,6 +100,18 @@
     <div id="log-list" class="log-list"></div>
   </div>
 
+  <!-- AI Panel -->
+  <div id="ai-panel" class="side-panel" style="display:flex; flex-direction:column;">
+    <div class="panel-hdr"><span>🤖 AI Review (Gemini 2.5)</span><button onclick="togglePanel('ai-panel')">✕</button></div>
+    <div class="ai-controls" style="padding: 15px; border-bottom: 1px solid var(--border); flex-shrink: 0;">
+      <input type="password" id="gemini-key" placeholder="Nhập Gemini API Key..." style="width:100%; padding: 8px; border-radius:6px; background:var(--surface); color:var(--text); border:1px solid var(--border); margin-bottom:10px;">
+      <button onclick="generateAIReport()" style="width:100%; padding:10px; background:var(--accent); color:#fff; border-radius:6px; border:none; cursor:pointer; font-weight:bold;">✨ Phân Tích Performance</button>
+    </div>
+    <div id="ai-report-content" style="padding: 15px; font-size: 13px; line-height: 1.6; color: var(--text); flex: 1; overflow-y: auto;">
+      Nhập API Key và bấm nút phía trên để AI tổng hợp tiến độ và đánh giá độ chăm chỉ của team nhé!
+    </div>
+  </div>
+
   <div id="overlay" class="overlay hidden" onclick="closePanels()"></div>
 
   <!-- Hyperlink Modal -->
@@ -126,6 +139,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.3/Sortable.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="db.js?v=2"></script>
   <script src="app-core.js?v=2"></script>
   <script src="app-render.js?v=2"></script>
