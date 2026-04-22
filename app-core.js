@@ -176,7 +176,21 @@ async function addRow() {
     createdAt: Date.now(), updatedAt: Date.now()
   };
   const key = await dbPush('tasks', newTask);
-  window.newRowKey = key;
+  
+  let attempts = 0;
+  const checkAndScroll = () => {
+    const tr = document.querySelector(`tr[data-key="${key}"]`);
+    if (tr) {
+      tr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      tr.classList.add('highlight-new');
+      setTimeout(() => tr.classList.remove('highlight-new'), 1000);
+    } else if (attempts < 20) {
+      attempts++;
+      setTimeout(checkAndScroll, 100);
+    }
+  };
+  checkAndScroll();
+
   await writeLog(currentUser, 'add', `Thêm task mới`);
 }
 async function updateField(key, field, value) {
